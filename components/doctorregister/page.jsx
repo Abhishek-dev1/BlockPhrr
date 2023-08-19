@@ -11,10 +11,6 @@ import {
 import AuthContext from '@/context/authContext';
 import PersonalInfo from '@/components/doctorRegistration/PersonalInfo';
 
-// import PersonalInfo from './PersonalInfo';
-// import AccountDetails from './AccountDetails';
-// import ReviewInfo from './ReviewInfo';
-
 
 const steps = ['Personal Details'];
 

@@ -9,31 +9,26 @@ import {
   Button
 } from '@mui/material';
 import AuthContext from '@/context/authContext';
-import PersonalInfo from '@/components/doctorRegistration/PersonalInfo';
-
-// import PersonalInfo from './PersonalInfo';
-// import AccountDetails from './AccountDetails';
-// import ReviewInfo from './ReviewInfo';
-
+import PersonalInfo from '@/components/doctorregister/PersonalInfo';
+import { postDoctor } from '@/apis/address';
+import { useRouter } from 'next/navigation';
 
 const steps = ['Personal Details'];
 
 const Form = () => {
   const [activeStep, setActiveStep] = useState(0);
-  const { user } = useContext(AuthContext);
+  const { user,setUserDetails } = useContext(AuthContext);
+
+  const router = useRouter();
 
   const [values, setValues] = useState({
     doctorAddress: user,
     firstName: '',
     lastName: '',
-    dob: null,
     aadharNumber: '',
     gender: 0,
   })
 
-  const handleBack = () => {
-    setActiveStep((prevStep) => prevStep - 1);
-  };
 
   const handleNext = () => {
     if (activeStep === steps.length - 1) {
@@ -51,6 +46,22 @@ const Form = () => {
         return <div>404: Not Found</div>
     }
   };
+
+  const handleSubmit = async () =>{
+    try{
+
+      const res = await postDoctor(values.firstName + " " + values.lastName,user,values.gender,values.aadharNumber);
+      if(res.message === "success"){
+         setUserDetails(res.user);
+         localStorage.setItem('userInfo',JSON.stringify(res.user));
+         router.push('/doctordashboard')
+
+      }
+    }
+    catch(err){
+
+    }
+  }
 
   return (
     <Box
@@ -107,7 +118,7 @@ const Form = () => {
             }}
           >
             {activeStep === steps.length - 1 ? (
-              <Button variant='outlined'>
+              <Button onClick={handleSubmit} variant='outlined'>
                 Submit
               </Button>
             ) : (

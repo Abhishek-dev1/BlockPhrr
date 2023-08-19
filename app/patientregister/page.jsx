@@ -14,14 +14,14 @@ import Allergies from '@/components/Registration/Allergies';
 import MedicineTracker from '@/components/Registration/CurrentMedication';
 import useContract from '@/hooks/useBlock';
 import { postAddress } from '@/apis/address';
-import {useRouter} from 'next/navigation';
+import { useRouter } from 'next/navigation';
 
 
 const steps = ['Personal Details', 'Allergies', 'Current Medications'];
 
 const Form = () => {
   const [activeStep, setActiveStep] = useState(0);
-  const { user } = useContext(AuthContext);
+  const { userDetails,setUserDetails } = useContext(AuthContext);
 
   const contractInstance = useContract();
 
@@ -67,11 +67,12 @@ const Form = () => {
     values.dob = convertToUnixTimestamp(values.dob);
     values.gender = values.gender === 'male' ? 0 : (values.gender === 'female' ? 1 : 0);
     console.log(contractInstance.methods)
-    // const res = await contractInstance.methods.registerPatient(values.firstName,values.lastName,values.dob,values.aadharNumber,values.gender,values.weight,values.allergies,values.currentMedication).send({from : values.patientAddress})
-    await postAddress(values.firstName + " " + values.lastName, values.patientAddress,false);
-    router.push('/patientdashboard');
-    if(res.blockHash){
-        
+    const res = await contractInstance.methods.registerPatient(values.firstName, values.lastName, values.dob, values.aadharNumber, values.gender, values.weight, values.allergies, values.currentMedication).send({ from: values.patientAddress })
+    const response = await postAddress(values.firstName + " " + values.lastName, values.patientAddress, false);
+    setUserDetails(response.user);
+    localStorage.setItem('userInfo', JSON.stringify(response.user));
+    if (res.blockHash) {
+      router.push('/patientdashboard');
     }
   }
 

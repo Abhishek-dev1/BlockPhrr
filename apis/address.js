@@ -26,3 +26,21 @@ export const postAddress = async (name,address,isDoctor) =>{
 
   return result;
 }
+export const postDoctor = async (name,address,gender,aadharNumber) =>{
+    const response = await fetch(`${API}/addDoctor`,{
+        method : 'POST',
+        headers:{
+          'Content-Type': 'application/json',
+          Accept : 'application/json'
+        },
+        body : JSON.stringify({
+            name,
+            address,
+            gender,
+            aadharNumber
+        })
+    })
+  const result = await response.json();
+
+  return result;
+}

@@ -1,6 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import useContract from "@/hooks/useBlock";
+import Link from "next/link";
 
 const UserDashboard = () => {
   const contractInstance = useContract();
@@ -12,17 +13,38 @@ const UserDashboard = () => {
     aadharNumber: "",
   });
 
+  const convertUnixToNormalDate = (unixTimestamp) => {
+    const date = new Date(unixTimestamp * 1000); // Convert to milliseconds
+    const year = date.getFullYear();
+    const month = date.getMonth() + 1; // Months are zero-based, so add 1
+    const day = date.getDate();
+
+    return `${day}-${month}-${year}`;
+  };
+
+
+  const getGender = (g)=>{
+     if(g == 0){
+      return "Male";
+     }
+     else if(g == 1){
+      return "Female";
+     }
+     else return "Other";
+  }
+
   const getDetails = async () => {
     if (contractInstance) {
       try {
         const response = await contractInstance.methods
           .getPatientDetailsByPatient()
           .call();
+          console.log(parseInt(response.dob));
         setUserDetails({
           firstName: response.firstName,
           lastName: response.lastName,
-          gender: response.gender,
-          dob: response.dob,
+          gender: getGender(response.gender),
+          dob: convertUnixToNormalDate(parseInt(response.dob)),
           aadharNumber: response.aadharNumber,
         });
       } catch (error) {
@@ -38,10 +60,10 @@ const UserDashboard = () => {
   }, [contractInstance]);
 
   return (
-    <div id="container" className="bg-gray-100 min-h-screen py-10">
-  <div className="max-w-xl mx-auto bg-white p-6 rounded shadow">
-    <h2 className="text-2xl font-semibold mb-4">User Dashboard</h2>
-    <div>
+    <div id="container" className="bg-gray-100 min-h-screen py-10 flex items-center ">
+  <div className="max-w-xl mx-auto bg-white p-20 rounded shadow">
+    <h2 className="text-2xl font-semibold mb-4 text-center">Patient Dashboard</h2>
+    <div className="text-center" >
       <p className="mb-2">
         Name: {userDetails.firstName} {userDetails.lastName}
       </p>
@@ -50,27 +72,27 @@ const UserDashboard = () => {
       <p className="mb-2">Aadhar Card Number: {userDetails.aadharNumber}</p>
     </div>
     <div className="flex justify-center mt-6">
-      <button className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 mr-4">
+      <button className="px-4 py-2 w-52 bg-blue-500 text-white rounded hover:bg-blue-600 mr-4">
         Update Details
       </button>
-      <button className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+      <button className="px-4 py-2 w-52 bg-blue-500 text-white rounded hover:bg-blue-600">
         View Details
       </button>
     </div>
     <div className="flex justify-center mt-4">
-      <button className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 mr-4">
-        Add Document
-      </button>
-      <button className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600">
-        View Document
+      <Link href="/patientdashboard/adddocuments" className="px-4 text-center py-2 w-52 bg-green-500 text-white rounded hover:bg-green-600 mr-4">
+        Add Documents
+      </Link>
+      <button className="px-4 py-2 w-52 bg-green-500 text-white rounded hover:bg-green-600">
+        View Documents
       </button>
     </div>
     <div className="flex justify-center mt-4">
-      <button className="px-4 py-2 bg-purple-500 text-white rounded hover:bg-purple-600 mr-4">
-        View Request
+      <button className="px-4 py-2 w-52 bg-purple-500 text-white rounded hover:bg-purple-600 mr-4">
+        View Requests
       </button>
-      <button className="px-4 py-2 bg-purple-500 text-white rounded hover:bg-purple-600">
-        Approved Request
+      <button className="px-4 py-2 w-52 bg-purple-500 text-white rounded hover:bg-purple-600">
+        Approved Requests
       </button>
     </div>
   </div>

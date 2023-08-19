@@ -10,7 +10,7 @@ const CONTRACT_ADDRESS = "0xe065F4d7D6024E03Ff474771bd4fF4491a6C30A6";
 
 const Home = () => {
 
-  const { user, setUser } = useContext(AuthContext);
+  const { user, setUser, setUserDetails } = useContext(AuthContext);
   const router = useRouter();
 
   const checkIfWalletIsConnected = async () => {
@@ -43,10 +43,6 @@ const Home = () => {
       localStorage.setItem("user", JSON.stringify(user));
 
 
-
-      // Setup listener! This is for the case where a user comes to our site
-      // and ALREADY had their wallet connected + authorized.
-      // setupEventListener()
     } else {
       console.log("No authorized account found")
     }
@@ -65,11 +61,13 @@ const Home = () => {
 
       const accounts = await ethereum.request({ method: "eth_requestAccounts" });
       localStorage.setItem("user", JSON.stringify(user));
-      
+
       setUser(accounts[0]);
 
       const response = await userExists(accounts[0]);
       if (response.message === 'exist') {
+        setUserDetails(response.user);
+        localStorage.setItem('userInfo', JSON.stringify(response.user));
         if (response.isDoctor) {
           router.push('/doctordashboard')
         }
@@ -80,12 +78,6 @@ const Home = () => {
       else {
         router.push('/selectrole')
       }
-
-
-
-      // Setup listener! This is for the case where a user comes to our site
-      // and connected their wallet for the first time.
-      // setupEventListener()
     } catch (error) {
       console.log(error)
     }
